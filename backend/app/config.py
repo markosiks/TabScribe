@@ -40,6 +40,24 @@ class SessionsConfig(BaseModel):
     stale_after_seconds: int = Field(default=3600, ge=1)
 
 
+class AudioConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    max_buffer_ms: int = Field(default=500, ge=1)
+    max_buffer_frames: int = Field(default=256, ge=1)
+    min_sample_rate_hz: int = Field(default=8000, ge=1)
+    max_sample_rate_hz: int = Field(default=192000, ge=1)
+    max_channels: int = Field(default=2, ge=1)
+    max_frame_duration_ms: int = Field(default=1000, ge=1)
+
+
+class WebSocketConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    event_queue_size: int = Field(default=128, ge=1)
+    auth_timeout_seconds: float = Field(default=5.0, gt=0)
+
+
 class Settings(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -48,6 +66,8 @@ class Settings(BaseModel):
     default_profile: SchedulerProfile = SchedulerProfile.balanced
     server: ServerConfig = Field(default_factory=ServerConfig)
     sessions: SessionsConfig = Field(default_factory=SessionsConfig)
+    audio: AudioConfig = Field(default_factory=AudioConfig)
+    websockets: WebSocketConfig = Field(default_factory=WebSocketConfig)
     persistence: PersistenceConfig = Field(default_factory=PersistenceConfig)
 
 
@@ -81,6 +101,13 @@ def _with_environment_overrides(config: dict[str, Any]) -> dict[str, Any]:
         "CTTS_DEFAULT_PROFILE": (("default_profile",), str),
         "CTTS_MODE": (("mode",), str),
         "CTTS_SESSION_STALE_AFTER_SECONDS": (("sessions", "stale_after_seconds"), int),
+        "CTTS_AUDIO_MAX_BUFFER_MS": (("audio", "max_buffer_ms"), int),
+        "CTTS_AUDIO_MAX_BUFFER_FRAMES": (("audio", "max_buffer_frames"), int),
+        "CTTS_EVENT_QUEUE_SIZE": (("websockets", "event_queue_size"), int),
+        "CTTS_WS_AUTH_TIMEOUT_SECONDS": (
+            ("websockets", "auth_timeout_seconds"),
+            float,
+        ),
         "CTTS_RAW_AUDIO_PERSISTENCE": (("persistence", "raw_audio"), _parse_bool),
         "CTTS_APP_VERSION": (("app", "version"), str),
     }

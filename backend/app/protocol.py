@@ -1,8 +1,4 @@
-"""Shared protocol contracts for backend and extension transport.
-
-The binary audio envelope is defined here as constants only. Actual packing,
-validation, and ingest behavior are added by later transport prompts.
-"""
+"""Shared protocol contracts for backend and extension transport."""
 
 from __future__ import annotations
 
@@ -62,6 +58,14 @@ class FilterMode(StrEnum):
 
 class AudioFormatCode(IntEnum):
     pcm_s16le = 1
+
+
+class ControlCommandName(StrEnum):
+    pause = "pause"
+    resume = "resume"
+    stop = "stop"
+    set_profile = "set_profile"
+    ping = "ping"
 
 
 class EventEnvelope(BaseModel):
@@ -156,3 +160,8 @@ AUDIO_ENVELOPE_FIELDS: tuple[str, ...] = (
 # capture_time_ms(u64), sample_rate(u32), channels(u16),
 # duration_ms(u16), format_code(u8), flags(u8) = 32 bytes.
 AUDIO_ENVELOPE_STRUCT_FORMAT = "<4sBBQQIHHBB"
+
+WEBSOCKET_CLOSE_UNSUPPORTED_DATA = 1003
+WEBSOCKET_CLOSE_INVALID_PAYLOAD = 1007
+WEBSOCKET_CLOSE_POLICY_VIOLATION = 1008
+WEBSOCKET_CLOSE_TRY_AGAIN_LATER = 1013

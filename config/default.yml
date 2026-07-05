@@ -12,5 +12,17 @@ server:
 sessions:
   stale_after_seconds: 3600
 
+audio:
+  max_buffer_ms: 500
+  max_buffer_frames: 256
+  min_sample_rate_hz: 8000
+  max_sample_rate_hz: 192000
+  max_channels: 2
+  max_frame_duration_ms: 1000
+
+websockets:
+  event_queue_size: 128
+  auth_timeout_seconds: 5.0
+
 persistence:
   raw_audio: false

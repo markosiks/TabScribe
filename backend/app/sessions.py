@@ -181,6 +181,12 @@ class SessionManager:
     def validate_token(self, session_id: str, token: str | None) -> bool:
         return self.authenticate_session(session_id, token) is not None
 
+    def touch_session(self, session_id: str) -> SessionRecord:
+        now = self._now()
+        with self._lock:
+            session = self._require_live_session_locked(session_id, now)
+            return self._touch_locked(session, now)
+
     def transition_state(
         self, session_id: str, requested_state: SessionState
     ) -> SessionRecord:
@@ -188,6 +194,20 @@ class SessionManager:
         with self._lock:
             session = self._require_live_session_locked(session_id, now)
             return self._transition_locked(session, requested_state, now)
+
+    def update_profile(
+        self, session_id: str, profile: SchedulerProfile
+    ) -> SessionRecord:
+        now = self._now()
+        with self._lock:
+            session = self._require_live_session_locked(session_id, now)
+            updated = replace(
+                session,
+                profile=profile,
+                last_activity_at=now,
+            )
+            self._sessions[session_id] = updated
+            return updated
 
     def request_stop(self, session_id: str) -> SessionRecord:
         now = self._now()
