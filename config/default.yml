@@ -1,0 +1,13 @@
+app:
+  name: "Chrome Tab Transcription Backend"
+  version: "0.1.0"
+
+mode: "local-first"
+default_profile: "balanced"
+
+server:
+  host: "127.0.0.1"
+  port: 8765
+
+persistence:
+  raw_audio: false
