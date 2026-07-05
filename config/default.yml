@@ -9,5 +9,8 @@ server:
   host: "127.0.0.1"
   port: 8765
 
+sessions:
+  stale_after_seconds: 3600
+
 persistence:
   raw_audio: false

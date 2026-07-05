@@ -34,6 +34,12 @@ class PersistenceConfig(BaseModel):
     raw_audio: bool = False
 
 
+class SessionsConfig(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    stale_after_seconds: int = Field(default=3600, ge=1)
+
+
 class Settings(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -41,6 +47,7 @@ class Settings(BaseModel):
     mode: str = "local-first"
     default_profile: SchedulerProfile = SchedulerProfile.balanced
     server: ServerConfig = Field(default_factory=ServerConfig)
+    sessions: SessionsConfig = Field(default_factory=SessionsConfig)
     persistence: PersistenceConfig = Field(default_factory=PersistenceConfig)
 
 
@@ -73,6 +80,7 @@ def _with_environment_overrides(config: dict[str, Any]) -> dict[str, Any]:
         "CTTS_PORT": (("server", "port"), int),
         "CTTS_DEFAULT_PROFILE": (("default_profile",), str),
         "CTTS_MODE": (("mode",), str),
+        "CTTS_SESSION_STALE_AFTER_SECONDS": (("sessions", "stale_after_seconds"), int),
         "CTTS_RAW_AUDIO_PERSISTENCE": (("persistence", "raw_audio"), _parse_bool),
         "CTTS_APP_VERSION": (("app", "version"), str),
     }

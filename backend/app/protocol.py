@@ -6,6 +6,7 @@ validation, and ingest behavior are added by later transport prompts.
 
 from __future__ import annotations
 
+from datetime import datetime
 from enum import IntEnum, StrEnum
 from typing import Any, Literal
 
@@ -70,6 +71,50 @@ class EventEnvelope(BaseModel):
     session_id: str = Field(min_length=1)
     timestamp_ms: int = Field(ge=0)
     payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class SessionCreateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    profile: SchedulerProfile | None = None
+
+
+class SessionCreateResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str = Field(min_length=1)
+    token: str = Field(min_length=1)
+    state: SessionState
+    profile: SchedulerProfile
+    audio_ws_url: str
+    events_ws_url: str
+    control_ws_url: str
+    created_at: datetime
+
+
+class SessionStatusResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str = Field(min_length=1)
+    state: SessionState
+    profile: SchedulerProfile
+    created_at: datetime
+    last_activity_at: datetime
+    glossary_version: str | None = None
+
+
+class GlossaryUpdateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    glossary_version: str | None = Field(default=None, min_length=1, max_length=256)
+
+
+class GlossaryUpdateResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    session_id: str = Field(min_length=1)
+    glossary_version: str = Field(min_length=1)
+    updated_at: datetime
 
 
 class AudioEnvelopeHeader(BaseModel):
